@@ -1,0 +1,42 @@
+{
+  "name": "vibgyor-voicetype",
+  "version": "1.0.0",
+  "description": "A fast, reliable browser-based voice typing plugin with real-time waveform visualization",
+  "main": "vibgyor-voicetype.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "speech-recognition",
+    "voice-typing",
+    "speech-to-text",
+    "web-speech-api",
+    "voice-input",
+    "transcription",
+    "audio-visualization",
+    "waveform",
+    "microphone",
+    "browser",
+    "javascript"
+  ],
+  "author": "Vibgyor Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/vibgyor-voicetype"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/vibgyor-voicetype/issues"
+  },
+  "homepage": "https://github.com/yourusername/vibgyor-voicetype#readme",
+  "files": [
+    "vibgyor-voicetype.js",
+    "README.md",
+    "LICENSE"
+  ],
+  "browserslist": [
+    "last 2 Chrome versions",
+    "last 2 Edge versions",
+    "last 2 Safari versions"
+  ]
+}

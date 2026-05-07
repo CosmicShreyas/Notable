@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibgyor Voice Type - Minimal Integration</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        
+        #micButton {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            background: #667eea;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px auto;
+        }
+        
+        #micButton.recording {
+            background: #f5576c;
+        }
+        
+        #micButton svg {
+            fill: white;
+            width: 30px;
+            height: 30px;
+        }
+        
+        #transcript {
+            border: 1px solid #ddd;
+            padding: 15px;
+            min-height: 100px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .interim {
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <h1>Minimal Integration Example</h1>
+    
+    <button id="micButton">
+        <svg viewBox="0 0 24 24">
+            <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+            <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+        </svg>
+    </button>
+    
+    <div id="transcript">Click the microphone to start...</div>
+    
+    <script src="vibgyor-voicetype.js"></script>
+    <script>
+        // Initialize the plugin
+        const voiceType = new VibgyorVoiceType({
+            language: 'en-US',
+            onTranscript: (data) => {
+                document.getElementById('transcript').innerHTML = 
+                    data.final + '<span class="interim"> ' + data.interim + '</span>';
+            },
+            onStart: () => {
+                document.getElementById('micButton').classList.add('recording');
+            },
+            onEnd: () => {
+                document.getElementById('micButton').classList.remove('recording');
+            },
+            onError: (error) => {
+                alert(error.message);
+            }
+        });
+        
+        // Toggle recording on click
+        document.getElementById('micButton').addEventListener('click', () => {
+            if (voiceType.isActive()) {
+                voiceType.stop();
+            } else {
+                voiceType.start();
+            }
+        });
+    </script>
+</body>
+</html>

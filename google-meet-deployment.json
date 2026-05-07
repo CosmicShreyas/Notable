@@ -1,0 +1,17 @@
+{
+  "addOns": {
+    "common": {
+      "name": "Notable",
+      "logoUrl": "https://YOUR_PUBLIC_DOMAIN/notable-logo-light.svg"
+    },
+    "meet": {
+      "web": {
+        "sidePanelUrl": "https://YOUR_PUBLIC_DOMAIN/google-meet",
+        "supportsScreenSharing": false,
+        "addOnOrigins": ["https://YOUR_PUBLIC_DOMAIN"],
+        "logoUrl": "https://YOUR_PUBLIC_DOMAIN/notable-logo-light.svg",
+        "darkModeLogoUrl": "https://YOUR_PUBLIC_DOMAIN/notable-logo.svg"
+      }
+    }
+  }
+}

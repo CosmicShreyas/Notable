@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibgyor Voice Type - Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .mic-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 30px 0;
+        }
+
+        .mic-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 50%;
+            width: 100px;
+            height: 100px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mic-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .mic-button:active {
+            transform: scale(0.95);
+        }
+
+        .mic-button.recording {
+            animation: pulse 1.5s infinite;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+            }
+            50% {
+                box-shadow: 0 4px 30px rgba(245, 87, 108, 0.8);
+            }
+        }
+
+        .mic-icon {
+            width: 40px;
+            height: 40px;
+            fill: white;
+        }
+
+        .status {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+            min-height: 20px;
+        }
+
+        .status.recording {
+            color: #f5576c;
+            font-weight: bold;
+        }
+
+        .visualization-container {
+            margin: 20px 0;
+            height: 100px;
+            background: #f5f5f5;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #waveform {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .transcript-container {
+            margin-top: 30px;
+        }
+
+        .transcript-label {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .transcript-box {
+            background: #f5f5f5;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            min-height: 100px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .transcript-box.empty {
+            color: #999;
+            font-style: italic;
+        }
+
+        .interim {
+            color: #999;
+        }
+
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .language-selector {
+            margin-bottom: 20px;
+        }
+
+        .language-selector select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .error {
+            background: #ffe0e0;
+            border: 2px solid #ffcccc;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            color: #cc0000;
+            display: none;
+        }
+
+        .error.show {
+            display: block;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #667eea;
+            color: white;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .copy-btn {
+            padding: 5px 10px;
+            font-size: 12px;
+            min-width: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎙️ Vibgyor Voice Type</h1>
+        <p class="subtitle">Click the microphone to start voice typing</p>
+
+        <div class="language-selector">
+            <select id="languageSelect">
+                <option value="en-US">English (United States)</option>
+                <option value="en-GB">English (United Kingdom)</option>
+                <option value="es-ES">Spanish (Spain)</option>
+                <option value="es-MX">Spanish (Mexico)</option>
+                <option value="fr-FR">French</option>
+                <option value="de-DE">German</option>
+                <option value="it-IT">Italian</option>
+                <option value="pt-BR">Portuguese (Brazil)</option>
+                <option value="zh-CN">Chinese (Simplified)</option>
+                <option value="ja-JP">Japanese</option>
+                <option value="ko-KR">Korean</option>
+                <option value="ar-SA">Arabic</option>
+                <option value="hi-IN">Hindi</option>
+            </select>
+        </div>
+
+        <div class="mic-container">
+            <button id="micButton" class="mic-button" title="Click to start/stop recording">
+                <svg class="mic-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                    <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+                </svg>
+            </button>
+            <div id="status" class="status">Ready to record</div>
+        </div>
+
+        <div class="visualization-container">
+            <canvas id="waveform"></canvas>
+        </div>
+
+        <div class="transcript-container">
+            <div class="transcript-label">
+                <span>Transcript</span>
+                <button id="copyBtn" class="btn btn-secondary copy-btn" style="display: none;">Copy</button>
+            </div>
+            <div id="transcript" class="transcript-box empty">
+                Your transcribed text will appear here...
+            </div>
+        </div>
+
+        <div class="controls">
+            <button id="clearBtn" class="btn btn-secondary">Clear</button>
+            <button id="downloadBtn" class="btn btn-primary" style="display: none;">Download Text</button>
+        </div>
+
+        <div id="error" class="error"></div>
+    </div>
+
+    <script src="vibgyor-voicetype.js"></script>
+    <script>
+        // Initialize the plugin
+        const voiceType = new VibgyorVoiceType({
+            language: 'en-US',
+            onTranscript: (data) => {
+                const transcriptBox = document.getElementById('transcript');
+                const copyBtn = document.getElementById('copyBtn');
+                const downloadBtn = document.getElementById('downloadBtn');
+                
+                if (data.combined) {
+                    transcriptBox.classList.remove('empty');
+                    transcriptBox.innerHTML = 
+                        `<span class="final">${data.final}</span>` +
+                        (data.interim ? `<span class="interim"> ${data.interim}</span>` : '');
+                    
+                    // Show copy and download buttons if there's content
+                    if (data.final) {
+                        copyBtn.style.display = 'inline-block';
+                        downloadBtn.style.display = 'block';
+                    }
+                } else {
+                    transcriptBox.classList.add('empty');
+                    transcriptBox.textContent = 'Your transcribed text will appear here...';
+                }
+            },
+            onStart: () => {
+                const micButton = document.getElementById('micButton');
+                const status = document.getElementById('status');
+                
+                micButton.classList.add('recording');
+                status.textContent = 'Recording... Speak now';
+                status.classList.add('recording');
+                
+                hideError();
+            },
+            onEnd: (data) => {
+                const micButton = document.getElementById('micButton');
+                const status = document.getElementById('status');
+                
+                micButton.classList.remove('recording');
+                status.textContent = 'Ready to record';
+                status.classList.remove('recording');
+            },
+            onError: (error) => {
+                showError(error.message);
+                
+                const micButton = document.getElementById('micButton');
+                const status = document.getElementById('status');
+                
+                micButton.classList.remove('recording');
+                status.textContent = 'Error occurred';
+                status.classList.remove('recording');
+            },
+            onAudioData: (audioData) => {
+                drawWaveform(audioData);
+            }
+        });
+
+        // DOM elements
+        const micButton = document.getElementById('micButton');
+        const clearBtn = document.getElementById('clearBtn');
+        const copyBtn = document.getElementById('copyBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const languageSelect = document.getElementById('languageSelect');
+        const canvas = document.getElementById('waveform');
+        const canvasCtx = canvas.getContext('2d');
+
+        // Set canvas size
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+
+        // Microphone button click
+        micButton.addEventListener('click', () => {
+            if (voiceType.isActive()) {
+                voiceType.stop();
+            } else {
+                voiceType.start();
+            }
+        });
+
+        // Clear button
+        clearBtn.addEventListener('click', () => {
+            const transcriptBox = document.getElementById('transcript');
+            transcriptBox.classList.add('empty');
+            transcriptBox.textContent = 'Your transcribed text will appear here...';
+            copyBtn.style.display = 'none';
+            downloadBtn.style.display = 'none';
+            hideError();
+        });
+
+        // Copy button
+        copyBtn.addEventListener('click', () => {
+            const transcript = voiceType.getTranscript();
+            navigator.clipboard.writeText(transcript).then(() => {
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = 'Copied!';
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                }, 2000);
+            });
+        });
+
+        // Download button
+        downloadBtn.addEventListener('click', () => {
+            const transcript = voiceType.getTranscript();
+            const blob = new Blob([transcript], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `transcript-${new Date().getTime()}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+
+        // Language selector
+        languageSelect.addEventListener('change', (e) => {
+            voiceType.setLanguage(e.target.value);
+        });
+
+        // Waveform visualization
+        function drawWaveform(audioData) {
+            const { timeDomainData, volume } = audioData;
+            const width = canvas.width;
+            const height = canvas.height;
+
+            // Clear canvas
+            canvasCtx.fillStyle = '#f5f5f5';
+            canvasCtx.fillRect(0, 0, width, height);
+
+            // Draw waveform
+            canvasCtx.lineWidth = 2;
+            canvasCtx.strokeStyle = '#667eea';
+            canvasCtx.beginPath();
+
+            const sliceWidth = width / timeDomainData.length;
+            let x = 0;
+
+            for (let i = 0; i < timeDomainData.length; i++) {
+                const v = timeDomainData[i] / 128.0;
+                const y = v * height / 2;
+
+                if (i === 0) {
+                    canvasCtx.moveTo(x, y);
+                } else {
+                    canvasCtx.lineTo(x, y);
+                }
+
+                x += sliceWidth;
+            }
+
+            canvasCtx.lineTo(width, height / 2);
+            canvasCtx.stroke();
+
+            // Draw volume indicator
+            const volumePercent = volume / 255;
+            const volumeHeight = volumePercent * height;
+            
+            const gradient = canvasCtx.createLinearGradient(0, height - volumeHeight, 0, height);
+            gradient.addColorStop(0, 'rgba(102, 126, 234, 0.3)');
+            gradient.addColorStop(1, 'rgba(118, 75, 162, 0.3)');
+            
+            canvasCtx.fillStyle = gradient;
+            canvasCtx.fillRect(0, height - volumeHeight, width, volumeHeight);
+        }
+
+        // Error handling
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = message;
+            errorDiv.classList.add('show');
+        }
+
+        function hideError() {
+            const errorDiv = document.getElementById('error');
+            errorDiv.classList.remove('show');
+        }
+
+        // Check browser support on load
+        if (!VibgyorVoiceType.isSupported()) {
+            showError('Speech recognition is not supported in this browser. Please use Chrome, Edge, or Safari.');
+            micButton.disabled = true;
+        }
+
+        // Clear waveform when not recording
+        function clearWaveform() {
+            const width = canvas.width;
+            const height = canvas.height;
+            canvasCtx.fillStyle = '#f5f5f5';
+            canvasCtx.fillRect(0, 0, width, height);
+            
+            // Draw center line
+            canvasCtx.strokeStyle = '#e0e0e0';
+            canvasCtx.lineWidth = 1;
+            canvasCtx.beginPath();
+            canvasCtx.moveTo(0, height / 2);
+            canvasCtx.lineTo(width, height / 2);
+            canvasCtx.stroke();
+        }
+
+        // Initial waveform
+        clearWaveform();
+    </script>
+</body>
+</html>
